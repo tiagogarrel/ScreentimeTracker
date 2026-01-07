@@ -23,18 +23,29 @@ st.set_page_config(page_title="Screen Time Tracker", layout="wide")
 
 info = st.secrets["gcp_service_account"].to_dict()
 
-# critical: convert literal "\n" to real newlines
-#info["private_key"] = info["private_key"].replace("\\n", "\n")
 
-creds = Credentials.from_service_account_info(
-    info,
-    scopes=[
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive",
-    ],
-)
+def get_gspread_client():
+    # Load service account info from Streamlit secrets
+    info = st.secrets["gcp_service_account"].to_dict()
 
-gc = gspread.authorize(creds)
+    # FIX: Streamlit stores multiline secrets with literal \n
+    info["private_key"] = info["private_key"].replace("\\n", "\n")
+
+    # Create credentials
+    creds = Credentials.from_service_account_info(
+        info,
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive",
+        ],
+    )
+
+    # Authorize gspread
+    return gspread.authorize(creds)
+
+
+# usage
+gc = get_gspread_client()
 
 
 
