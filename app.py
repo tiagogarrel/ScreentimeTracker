@@ -21,6 +21,23 @@ SCOPES = [
 st.set_page_config(page_title="Screen Time Tracker", layout="wide")
 
 
+info = st.secrets["gcp_service_account"].to_dict()
+
+# critical: convert literal "\n" to real newlines
+#info["private_key"] = info["private_key"].replace("\\n", "\n")
+
+creds = Credentials.from_service_account_info(
+    info,
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ],
+)
+
+gc = gspread.authorize(creds)
+
+
+
 # ----------------------------
 # Google Sheets client
 # ----------------------------
